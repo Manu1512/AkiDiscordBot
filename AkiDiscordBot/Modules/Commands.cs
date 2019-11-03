@@ -53,6 +53,9 @@ namespace AkiDiscordBot.Modules
         [Command("version")]
         public async Task Version()
         {
+            // Version pattern:
+            // [Main].[Year].[Update].[Patch]
+
             var embed = new EmbedBuilder()
             {
                 Title = "Version",

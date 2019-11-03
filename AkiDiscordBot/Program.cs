@@ -52,7 +52,7 @@ namespace AkiDiscordBot
             string message = Convert.ToString(msg);
             if (message.Contains("Joined"))
             {
-                joinedServerId = Context.Guild.Id; // ID wird zu diesem Zeitpunkt noch nicht erkannt -> Muss später eingelesen werden
+                joinedServerId = Context.Guild.Id; // TODO: ID wird zu diesem Zeitpunkt noch nicht erkannt -> Muss später eingelesen werden
                 //joinedServerName = Context.Guild.Name;
 
                 Console.WriteLine(/*joinedServerName + ": " + */joinedServerId);
