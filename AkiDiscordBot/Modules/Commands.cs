@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,33 +65,22 @@ namespace AkiDiscordBot.Modules
             await Context.Channel.SendMessageAsync("", false, embed);
         }
 
-        [Command("guild")]
-        public async Task Guild()
-        {
-            var embed = new EmbedBuilder()
-            {
-                Title = "Server",
-                Description = Context.Guild.Name + ": " + Context.Guild.Id,
-                Color = color
-            }.Build();
-
-            await Context.Channel.SendMessageAsync("", false, embed);
-        }
-
         [Command("prefix")]
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task Prefix(string prefix = null)
         {
-            if(prefix != null)
-            { 
-                Config.bot.cmdPrefix = prefix;
+            ulong guild = Context.Guild.Id;
+            string path = UserData.userDataFolder + UserData.userDataFolder02 + guild + "/" + UserData.prefixData;
 
-                string json = File.ReadAllText(Config.configPath);
-                dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                jsonObj["cmdPrefix"] = prefix;
+            string currentPrefix = File.ReadAllText(path);
 
-                string output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-                File.WriteAllText(Config.configPath, output);
+            if (prefix != null)
+            {
+                // Überschreibe alten Prefix mit neuem Prefix
+                currentPrefix = prefix;
+
+                File.Delete(path);
+                File.WriteAllText(path, prefix);
 
                 await Program._client.SetGameAsync(prefix + "help for commands");
             }
@@ -100,7 +88,7 @@ namespace AkiDiscordBot.Modules
             var embed = new EmbedBuilder()
             {
                 Title = "Festgelegter Prefix",
-                Description = Config.bot.cmdPrefix,
+                Description = currentPrefix,
                 Color = color
             }.Build();
 
@@ -152,6 +140,7 @@ namespace AkiDiscordBot.Modules
 
             Console.WriteLine(server);
 
+            // Verfügbare Gifs
             string[] gif =
             {
                 "http://25.media.tumblr.com/tumblr_ma7l17EWnk1rq65rlo1_500.gif",
@@ -162,16 +151,18 @@ namespace AkiDiscordBot.Modules
                 "https://media2.giphy.com/media/mZQZ4aBMgM3Kg/200.webp?cid=790b7611138f677eb9ea9872067cd4d285d4144931c23578&rid=200.webp"
             };
 
+            // Zufallszahl, um ein zufälliges Gif auszuwählen
             Random rnd = new Random();
             int i = rnd.Next(0, gif.Length);
 
             var embed = new EmbedBuilder() { Color = color };
 
             #region Anzahl Umarmungen
-            // Anzahl der Umarmungen auslesen
+            // Anzahl der bisherigen Umarmungen auslesen
             List<UserData> data = new List<UserData>();
             List<string> lines = File.ReadAllLines(UserData.userDataPath).ToList();
 
+            // Führe den Code für jede Zeile aus
             foreach (string line in lines)
             {
                 entries = line.Split(';');
@@ -196,6 +187,7 @@ namespace AkiDiscordBot.Modules
                         stringHugs = Convert.ToString(intHugs);
                         stringPats = entries[3]; // Speichert die Pats vorübergehend
 
+                        // Speichert die Position der Zeile
                         indexSave = index;
 
                         // Verhindert, dass der User neu angelegt wird
@@ -234,10 +226,10 @@ namespace AkiDiscordBot.Modules
 
                 File.WriteAllLines(UserData.userDataPath, output);
 
-                // ALte Zeile löschen
-                lines = File.ReadAllLines(UserData.userDataPath).ToList();
-                lines.RemoveAt(indexSave);
-                File.WriteAllLines(UserData.userDataPath, lines.ToArray());
+                // Alte Zeile löschen
+                lines = File.ReadAllLines(UserData.userDataPath).ToList(); // Alle Zeilen einlesen
+                lines.RemoveAt(indexSave); // Zeile an bestimmter Position löschen
+                File.WriteAllLines(UserData.userDataPath, lines.ToArray()); // Alle Zeilen neu schreiben und neue Zeile unten hinzufügen
             }
             // // // // //
             #endregion Anzahl Umarmungen

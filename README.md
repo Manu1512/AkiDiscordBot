@@ -15,10 +15,9 @@ Following features are available **at the moment**:
  - "Fun" Commands: Hugs, Pats and more
  
 ## Roadmap
- 
- - making it multi-server compatible
+ - Database connection
  - making the bot available for everyone
- - adding more feature for every section:
+ - adding more features for every section:
 	 - moderation
 	 - administration
 	 - fun

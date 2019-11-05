@@ -5,11 +5,17 @@ namespace AkiDiscordBot
 {
     public class UserData
     {
-        private const string userDataFolder = "Resources";
-        private const string userDataFolder02 = "Configs";
-        private static string userDataFile = Convert.ToString(Program.joinedServerId) + ".txt";
+        public static ulong joinedServerId;
+        public static string joinedServerName;
 
-        public static string userDataPath = userDataFolder + "/" + userDataFolder02 + "/" + userDataFile;
+        public const string userDataFolder = "Resources/";
+        public const string userDataFolder02 = "Configs/";
+        private static string userDataFolder03 = Convert.ToString(Program.joinedServerId);
+
+        private static string userDataFile = "userConfig.txt";
+        public static string prefixData = "prefix.txt";
+
+        public static string userDataPath = userDataFolder + userDataFolder02 + userDataFolder03;
 
         public string Sender { get; set; }
         public string Receiver { get; set; }
@@ -18,16 +24,19 @@ namespace AkiDiscordBot
 
         public static void Data()
         {
-            //Console.WriteLine(Program.joinedServerName);
-
+            // Create Folders
             if (!Directory.Exists(userDataFolder))
                 Directory.CreateDirectory(userDataFolder);
-
             if (!Directory.Exists(userDataFolder02))
                 Directory.CreateDirectory(userDataFolder + "/" + userDataFolder02);
+            if (!Directory.Exists(userDataFolder03))
+                Directory.CreateDirectory(userDataFolder + "/" + userDataFolder02 + "/" + userDataFolder03);
 
-            if (!File.Exists(userDataPath))
-                File.Create(userDataPath);
+            // Create Files
+            if (!File.Exists(userDataPath + "/" + userDataFile))
+                File.Create(userDataPath + "/" + userDataFile);
+            if (!File.Exists(userDataPath + "/" + prefixData))
+                File.WriteAllText(userDataPath + "/" + prefixData, Config.bot.cmdPrefix);
         }
     }
 }
