@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AkiDiscordBot
 {
-    class Program : ModuleBase<SocketCommandContext>
+    class Program
     {
         static void Main(string[] args) => new Program().RunBotAsync().GetAwaiter().GetResult();
 
@@ -18,8 +18,8 @@ namespace AkiDiscordBot
         public static string joinedServerName;
 
         public static DiscordSocketClient _client;
-        private CommandService _commands;
-        private IServiceProvider _services;
+        public static CommandService _commands;
+        public static IServiceProvider _services;
 
         public async Task RunBotAsync()
         {
@@ -75,7 +75,7 @@ namespace AkiDiscordBot
             string cmdPrefix = File.ReadAllText(path);
 
             int argPos = 0;
-            if (message.HasStringPrefix(cmdPrefix, ref argPos))
+            if (message.HasStringPrefix(cmdPrefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
                 var result = await _commands.ExecuteAsync(context, argPos, _services);
                 if (!result.IsSuccess) Console.WriteLine(result.ErrorReason);

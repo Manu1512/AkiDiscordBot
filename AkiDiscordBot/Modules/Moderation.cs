@@ -13,9 +13,15 @@ namespace AkiDiscordBot.Modules
 
         public static async Task WordsFilter(SocketMessage msg)
         {
+            string user = msg.Author.Username;
+
             if (Filter_de.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)) ||
                 Filter_en.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)))
+            { 
                 await msg.DeleteAsync();
+
+                Console.WriteLine($"[DELETED] {user}: {msg}");
+            }
         }
     }
 }

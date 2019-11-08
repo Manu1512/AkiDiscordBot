@@ -10,6 +10,8 @@ namespace AkiDiscordBot.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
+        LoadPrefix lp = new LoadPrefix();
+
         Color color = new Color(0xFF7700);
         string sPrefix = Config.bot.cmdPrefix;
         //string gif01 = @"Resources/Gifs/gif01.gif";
@@ -17,39 +19,40 @@ namespace AkiDiscordBot.Modules
 
         #region useful
         [Command("help")]
-        public async Task Help()
+        [Summary("Lässt alle Commands ausgeben")]
+        public async Task Help(string helpCommand = null)
         {
-            string Admin = "<Admin>";
+            ulong guild = Context.Guild.Id;
+            string prefix = lp.loadPrefix(guild);
 
-            var dm = new EmbedBuilder
+            if(helpCommand == null)
+            { 
+                // Speichert alle commands in einer Liste
+                List<CommandInfo> commands = Program._commands.Commands.ToList();
+
+                string[] commandsArray = new string[commands.Count+1];
+                int count = 0;
+
+                foreach (CommandInfo command in commands)
+                {
+                    string commandName = command.Name ?? "Kein Command gefunden";
+                    string commandInfo = command.Summary ?? "Keine Beschreibung verfügbar";
+
+                    commandsArray[count] += $"> ● **{prefix}{commandName}**:  {commandInfo}\n";
+                    count++;
+                }
+
+                //await Context.User.SendMessageAsync(string.Join("", commandsArray));
+                await Context.Channel.SendMessageAsync(string.Join("", commandsArray));
+            }
+            else
             {
-                Title = "Help",
-                Description = "Alle verfügbaren Befehle.",
-                Color = color
-            };
-
-            dm.AddField(sPrefix + "version", "Gibt die aktuelle Version aus.")
-                .AddField(sPrefix + "prefix", "Zeigt den aktuellen Prefix an oder ändert ihn." + Admin)
-                .AddField(sPrefix + "setgame", "Ändert den Spielestatus." + Admin)
-                .AddField(sPrefix + "kick", "Kickt einen User vom Server." + Admin)
-                .AddField(sPrefix + "ban", "Bannt einen User vom Server und löscht alle Nachrichten von maximal 7 Tagen." + Admin);
-                //.AddField(sPrefix + "hug", "Umarme eine tolle Person")
-                //.AddField(sPrefix + "pat", "Streichel deinen Lieblingsmenschen")
-                //.AddField(sPrefix + "lick", "Leck jemanden ab")
-                //.AddField(sPrefix + "kiss", "Küss jemanden");
-
-            var embed = new EmbedBuilder
-            {
-                Title = "Help",
-                Description = "Alle verfügbaren Befehle wurden per Direktnachricht versendet.",
-                Color = color
-            };
-
-            await Context.Channel.SendMessageAsync("", false, embed.Build());
-            await Context.User.SendMessageAsync("", false, dm.Build());
+                List<CommandAttribute> attributes = Program._services.
+            }
         }
         
         [Command("version")]
+        [Summary("Gibt die aktuelle Version aus")]
         public async Task Version()
         {
             // Version pattern:
@@ -66,6 +69,7 @@ namespace AkiDiscordBot.Modules
         }
 
         [Command("prefix")]
+        [Summary("Zeigt den Prefix an oder ändert ihn")]
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task Prefix(string prefix = null)
         {
@@ -95,14 +99,8 @@ namespace AkiDiscordBot.Modules
             await ReplyAsync(embed: embed);          
         }
 
-        [Command("setgame")]
-        [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task SetGame([Remainder]string msg)
-        {
-            await Context.Client.SetGameAsync(msg);
-        }
-
         [Command("kick")]
+        [Summary("Kickt einen Spieler")]
         [RequireUserPermission(GuildPermission.KickMembers)]
         [RequireBotPermission(GuildPermission.KickMembers)]
         public async Task Kick(IGuildUser user, [Remainder]string reason = "Keine Begründung angegeben")
@@ -111,11 +109,12 @@ namespace AkiDiscordBot.Modules
         }
 
         [Command("ban")]
+        [Summary("Bannt einen Spieler")]
         [RequireUserPermission(GuildPermission.BanMembers)]
         [RequireBotPermission(GuildPermission.BanMembers)]
-        public async Task Ban(IGuildUser user, int prune = 1, [Remainder]string reason = "Keine Begründung angegeben")
+        public async Task Ban(IGuildUser user, int msgRemoveDays = 1, [Remainder]string reason = "Keine Begründung angegeben")
         {
-            await user.BanAsync(prune, reason);
+            await user.BanAsync(msgRemoveDays, reason);
         }
         #endregion useful
 
