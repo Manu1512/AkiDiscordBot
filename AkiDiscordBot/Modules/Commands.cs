@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ namespace AkiDiscordBot.Modules
     {
         LoadPrefix lp = new LoadPrefix();
 
-        Color color = new Color(0xFF7700);
+        public static Color color = new Color(0xFF7700);
         string sPrefix = Config.bot.cmdPrefix;
         //string gif01 = @"Resources/Gifs/gif01.gif";
         //Uri gif01 = new Uri("file:///Resources/Gifs/gif01.gif");
@@ -20,7 +21,7 @@ namespace AkiDiscordBot.Modules
         #region useful
         [Command("help")]
         [Summary("Lässt alle Commands ausgeben")]
-        public async Task Help(string helpCommand = null)
+        public async Task Help([Summary("Gibt aus, wie der Command verwendet wird")]string helpCommand = null)
         {
             ulong guild = Context.Guild.Id;
             string prefix = lp.loadPrefix(guild);
@@ -33,21 +34,26 @@ namespace AkiDiscordBot.Modules
                 string[] commandsArray = new string[commands.Count+1];
                 int count = 0;
 
+                var user = Context.User as SocketGuildUser;
+
                 foreach (CommandInfo command in commands)
                 {
                     string commandName = command.Name ?? "Kein Command gefunden";
                     string commandInfo = command.Summary ?? "Keine Beschreibung verfügbar";
-
+                    //string commandAttribute = ;
+                    //Console.WriteLine($"{commandName}: {commandAttribute}");
+                    //if(user.GuildPermissions.Administrator)
+                    // TODO: Commands nicht ausgeben, wenn der User keine Rechte dazu hat
                     commandsArray[count] += $"> ● **{prefix}{commandName}**:  {commandInfo}\n";
                     count++;
                 }
 
-                //await Context.User.SendMessageAsync(string.Join("", commandsArray));
-                await Context.Channel.SendMessageAsync(string.Join("", commandsArray));
+                await Context.User.SendMessageAsync(string.Join("", commandsArray));
+                //await Context.Channel.SendMessageAsync(string.Join("", commandsArray));
             }
             else
             {
-                List<CommandAttribute> attributes = Program._services.
+                // TODO: Command usage anzeigen
             }
         }
         
@@ -71,7 +77,7 @@ namespace AkiDiscordBot.Modules
         [Command("prefix")]
         [Summary("Zeigt den Prefix an oder ändert ihn")]
         [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task Prefix(string prefix = null)
+        public async Task Prefix([Summary("Zu welchem Prefix der momentane Prefix geändert werden soll")]string prefix = null)
         {
             ulong guild = Context.Guild.Id;
             string path = UserData.userDataFolder + UserData.userDataFolder02 + guild + "/" + UserData.prefixData;
@@ -116,12 +122,30 @@ namespace AkiDiscordBot.Modules
         {
             await user.BanAsync(msgRemoveDays, reason);
         }
+        
+        [Command("accept")]
+        [Summary("Akzeptiere das Regelwerk")]
+        public async Task Accept()
+        {
+            var wavingHand = new Emoji("👋");
+
+            var user = Context.User as SocketGuildUser;
+            var role = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Name == "User");
+
+            if(!user.Roles.Contains(role))
+            {
+                await (user as IGuildUser).AddRoleAsync(role);
+                await Context.Message.AddReactionAsync(wavingHand);
+            }
+        }
+        
         #endregion useful
 
 
 
         #region fun
         [Command("hug")]
+        [Summary("Umarmt einen Spieler")]
         public async Task Hug(string receiver)
         {
             string[] entries = { };
@@ -134,10 +158,10 @@ namespace AkiDiscordBot.Modules
             int index = 0;
             int indexSave = 0;
 
+            ulong guild = Context.Guild.Id;
+
             string sender = "<@" + Context.User.Id + ">";
             string server = "<@" + Context.Channel.Name + ">";
-
-            Console.WriteLine(server);
 
             // Verfügbare Gifs
             string[] gif =
@@ -155,11 +179,12 @@ namespace AkiDiscordBot.Modules
             int i = rnd.Next(0, gif.Length);
 
             var embed = new EmbedBuilder() { Color = color };
+            string path = UserData.userDataFolder + "/" + UserData.userDataFolder02 + "/" + guild + "/" + UserData.userDataFile;
 
             #region Anzahl Umarmungen
             // Anzahl der bisherigen Umarmungen auslesen
             List<UserData> data = new List<UserData>();
-            List<string> lines = File.ReadAllLines(UserData.userDataPath).ToList();
+            List<string> lines = File.ReadAllLines(path).ToList();
 
             // Führe den Code für jede Zeile aus
             foreach (string line in lines)
@@ -210,7 +235,7 @@ namespace AkiDiscordBot.Modules
                 foreach (var user in data)
                     output.Add($"{ user.Sender };{ user.Receiver };{ user.Hugs };{ user.Pats }");
 
-                File.WriteAllLines(UserData.userDataPath, output);
+                File.WriteAllLines(path, output);
             }
             else if(addNumber == true)
             {
@@ -223,12 +248,12 @@ namespace AkiDiscordBot.Modules
                 foreach (var user in data)
                     output.Add($"{ user.Sender };{ user.Receiver };{ user.Hugs };{ user.Pats }");
 
-                File.WriteAllLines(UserData.userDataPath, output);
+                File.WriteAllLines(path, output);
 
                 // Alte Zeile löschen
-                lines = File.ReadAllLines(UserData.userDataPath).ToList(); // Alle Zeilen einlesen
+                lines = File.ReadAllLines(path).ToList(); // Alle Zeilen einlesen
                 lines.RemoveAt(indexSave); // Zeile an bestimmter Position löschen
-                File.WriteAllLines(UserData.userDataPath, lines.ToArray()); // Alle Zeilen neu schreiben und neue Zeile unten hinzufügen
+                File.WriteAllLines(path, lines.ToArray()); // Alle Zeilen neu schreiben und neue Zeile unten hinzufügen
             }
             // // // // //
             #endregion Anzahl Umarmungen
@@ -240,6 +265,7 @@ namespace AkiDiscordBot.Modules
         }
 
         [Command("pat")]
+        [Summary("Streichelt einen Spieler")]
         public async Task Pat(string receiver)
         {
             string[] entries = { };
@@ -251,6 +277,8 @@ namespace AkiDiscordBot.Modules
 
             int index = 0;
             int indexSave = 0;
+
+            ulong guild = Context.Guild.Id;
 
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
@@ -268,11 +296,12 @@ namespace AkiDiscordBot.Modules
             int i = rnd.Next(0, gif.Length);
 
             var embed = new EmbedBuilder() { Color = color };
+            string path = UserData.userDataFolder + "/" + UserData.userDataFolder02 + "/" + guild + "/" + UserData.userDataFile;
 
             #region Anzahl Pats
             // Anzahl der Umarmungen auslesen
             List<UserData> data = new List<UserData>();
-            List<string> lines = File.ReadAllLines(UserData.userDataPath).ToList();
+            List<string> lines = File.ReadAllLines(path).ToList();
 
             foreach (string line in lines)
             {
@@ -322,7 +351,7 @@ namespace AkiDiscordBot.Modules
                 foreach (var user in data)
                     output.Add($"{ user.Sender };{ user.Receiver };{ user.Hugs };{ user.Pats }");
 
-                File.WriteAllLines(UserData.userDataPath, output);
+                File.WriteAllLines(path, output);
             }
             else if (addNumber == true)
             {
@@ -335,12 +364,12 @@ namespace AkiDiscordBot.Modules
                 foreach (var user in data)
                     output.Add($"{ user.Sender };{ user.Receiver };{ user.Hugs };{ user.Pats }");
 
-                File.WriteAllLines(UserData.userDataPath, output);
+                File.WriteAllLines(path, output);
 
                 // Alte Zeile löschen
-                lines = File.ReadAllLines(UserData.userDataPath).ToList();
+                lines = File.ReadAllLines(path).ToList();
                 lines.RemoveAt(indexSave);
-                File.WriteAllLines(UserData.userDataPath, lines.ToArray());
+                File.WriteAllLines(path, lines.ToArray());
             }
             // // // // //
             #endregion Anzahl Pats
@@ -352,6 +381,7 @@ namespace AkiDiscordBot.Modules
         }
         
         [Command("lick")]
+        [Summary("Mhhhh, lecker")]
         public async Task Lick(string receiver)
         {
             string sender = "<@" + Context.User.Id + ">";
@@ -375,6 +405,7 @@ namespace AkiDiscordBot.Modules
         }
 
         [Command("kiss")]
+        [Summary("Küsse deinen Liebling")]
         public async Task Kiss(string receiver)
         {
             string sender = "<@" + Context.User.Id + ">";

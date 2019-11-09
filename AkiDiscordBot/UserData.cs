@@ -12,7 +12,7 @@ namespace AkiDiscordBot
         public const string userDataFolder02 = "Configs/";
         private static string userDataFolder03 = Convert.ToString(Program.joinedServerId);
 
-        private static string userDataFile = "userConfig.txt";
+        public static string userDataFile = "userConfig.txt";
         public static string prefixData = "prefix.txt";
 
         public static string userDataPath = userDataFolder + userDataFolder02 + userDataFolder03;

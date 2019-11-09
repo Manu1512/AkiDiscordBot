@@ -15,6 +15,8 @@ namespace AkiDiscordBot.Modules
         {
             string user = msg.Author.Username;
 
+            var channel = msg.Channel as SocketGuildChannel;
+
             if (Filter_de.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)) ||
                 Filter_en.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)))
             { 

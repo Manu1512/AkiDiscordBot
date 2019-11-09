@@ -14,6 +14,8 @@ namespace AkiDiscordBot
     {
         static void Main(string[] args) => new Program().RunBotAsync().GetAwaiter().GetResult();
 
+        LoadPrefix lp = new LoadPrefix();
+
         public static ulong joinedServerId;
         public static string joinedServerName;
 
@@ -66,19 +68,32 @@ namespace AkiDiscordBot
             var context = new SocketCommandContext(_client, message);
             if (message.Author.IsBot) return;
 
+            var user = message.Author;
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.Color = Commands.color;
+
             // Die Guild ID auslesen für Pfad
             var channel = message.Channel as SocketGuildChannel;
             var guild = channel.Guild.Id;
+            var guildName = channel.Guild.Name;
 
-            // Die für den Server zuständige Datei öffnen
-            string path = UserData.userDataFolder + UserData.userDataFolder02 + guild + "/" + UserData.prefixData;
-            string cmdPrefix = File.ReadAllText(path);
+            // Den für den Server festgelegten Prefix laden
+            string cmdPrefix = lp.loadPrefix(guild);
 
             int argPos = 0;
             if (message.HasStringPrefix(cmdPrefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
+                Console.WriteLine($"{guildName}({guild}); {user}: {message}");
+
                 var result = await _commands.ExecuteAsync(context, argPos, _services);
-                if (!result.IsSuccess) Console.WriteLine(result.ErrorReason);
+                if (!result.IsSuccess)
+                {
+                    embed.Title = result.ErrorReason;
+                    await ((ISocketMessageChannel)_client.GetChannel(channel.Id)).SendMessageAsync("", false, embed.Build());
+
+                    Console.WriteLine(result.ErrorReason);
+                }
             }
         }
 
