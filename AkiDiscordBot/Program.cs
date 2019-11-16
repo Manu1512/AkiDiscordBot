@@ -41,7 +41,7 @@ namespace AkiDiscordBot
             await _client.LoginAsync(TokenType.Bot, Config.bot.token);
             await _client.StartAsync();
 
-            await _client.SetGameAsync(Config.bot.cmdPrefix + "help for commands");
+            await _client.SetGameAsync(Config.bot.cmdPrefix + " || " + Config.bot.version);
 
             await Task.Delay(-1);
         }
@@ -84,7 +84,7 @@ namespace AkiDiscordBot
             int argPos = 0;
             if (message.HasStringPrefix(cmdPrefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
-                Console.WriteLine($"{guildName}({guild}); {user}: {message}");
+                Console.WriteLine($"[{guildName}({guild})] {user}: {message}");
 
                 var result = await _commands.ExecuteAsync(context, argPos, _services);
                 if (!result.IsSuccess)
@@ -103,8 +103,8 @@ namespace AkiDiscordBot
             joinedServerName = guild.Name;
 
             Console.WriteLine("[JOIN] Aki has joined a new Server.");
-            Console.WriteLine("[JOIN] Name: " + joinedServerId);
-            Console.WriteLine("[JOIN] Id: " + joinedServerName);
+            Console.WriteLine("[JOIN] Name: " + joinedServerName);
+            Console.WriteLine("[JOIN] Id: " + joinedServerId);
             UserData.Data();
         }
 
@@ -114,8 +114,8 @@ namespace AkiDiscordBot
             joinedServerName = guild.Name;
 
             Console.WriteLine("[LEFT] Aki has left a Server.");
-            Console.WriteLine("[LEFT] Name: " + joinedServerId);
-            Console.WriteLine("[LEFT] Id: " + joinedServerName);
+            Console.WriteLine("[LEFT] Name: " + joinedServerName);
+            Console.WriteLine("[LEFT] Id: " + joinedServerId);
         }
     }
 }

@@ -40,16 +40,18 @@ namespace AkiDiscordBot.Modules
                 {
                     string commandName = command.Name ?? "Kein Command gefunden";
                     string commandInfo = command.Summary ?? "Keine Beschreibung verfügbar";
-                    //string commandAttribute = ;
-                    //Console.WriteLine($"{commandName}: {commandAttribute}");
-                    //if(user.GuildPermissions.Administrator)
+
                     // TODO: Commands nicht ausgeben, wenn der User keine Rechte dazu hat
                     commandsArray[count] += $"> ● **{prefix}{commandName}**:  {commandInfo}\n";
                     count++;
                 }
 
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.Color = color;
+                embed.Description = "Eine Liste mit allen verfügbaren Commands wurde per Direktnachricht versendet.";
+
                 await Context.User.SendMessageAsync(string.Join("", commandsArray));
-                //await Context.Channel.SendMessageAsync(string.Join("", commandsArray));
+                await Context.Channel.SendMessageAsync("", false, embed.Build());
             }
             else
             {
@@ -91,8 +93,6 @@ namespace AkiDiscordBot.Modules
 
                 File.Delete(path);
                 File.WriteAllText(path, prefix);
-
-                await Program._client.SetGameAsync(prefix + "help for commands");
             }
 
             var embed = new EmbedBuilder()
@@ -137,8 +137,7 @@ namespace AkiDiscordBot.Modules
                 await (user as IGuildUser).AddRoleAsync(role);
                 await Context.Message.AddReactionAsync(wavingHand);
             }
-        }
-        
+        }       
         #endregion useful
 
 
@@ -146,8 +145,79 @@ namespace AkiDiscordBot.Modules
         #region fun
         [Command("hug")]
         [Summary("Umarmt einen Spieler")]
-        public async Task Hug(string receiver)
+        public async Task Hug(string receiver = null)
         {
+            Random rnd = new Random();
+
+            EmbedBuilder error = new EmbedBuilder();
+            error.Color = color;
+
+            #region no receiver or bot
+            if (receiver == null || !receiver.Contains("@"))
+            {
+                #region Users auslesen
+                // Liste erstellen
+                List<SocketGuildUser> users = new List<SocketGuildUser>();
+
+                // Alle verfügbaren Benutzer auf dem Server einlesen
+                var guildUsers = Context.Guild.Users;
+                foreach(SocketGuildUser user in guildUsers)
+                {
+                    // Verfügbare Benutzer auf die Liste setzen
+                    users.Add(user);
+                }
+
+                // Liste in Array konvertieren und zufällige Zahl generieren
+                SocketGuildUser[] arrayUsers = users.ToArray();
+                int rndUser = rnd.Next(0, arrayUsers.Length);
+                #endregion
+
+                string[] msg =
+                {
+                    "Schon mal Luft umarmt?",
+                    "Da hast du wohl etwas vergessen, meinst du nicht auch?",
+                    $"Einmal Mitleid für {Context.User.Username}! Du umarmst Luft.",
+                    "Uhm... Wie wär's mit jemandem, den du auch umarmen kannst?",
+                    "Ach komm, umarm doch wenigstens irgendwen.",
+                    "Ich hab besseres zu tun, als dir beim Luft Umarmen zuzusehen.",
+                    $"Ich geb dir einen Vorschlag: Umarm doch mal @{arrayUsers[rndUser]}!",
+                    "Irgendwie tust du mir leid.",
+                    "Versuch nochmal nachzudenken, was du gerade vergessen hast.",
+                    "Du verstehst nicht, wie das funktioniert, oder?"
+                };
+
+                int x = rnd.Next(0, msg.Length);
+                error.Description = msg[x];
+
+                await ReplyAsync("", false, error.Build());
+                return;
+            }
+            else if (Context.Message.Content.Contains("<@632229735178567690>"))
+            {
+                #region Users auslesen
+                // Liste erstellen
+                List<SocketGuildUser> users = new List<SocketGuildUser>();
+
+                // Alle verfügbaren Benutzer auf dem Server einlesen
+                var guildUsers = Context.Guild.Users;
+                foreach (SocketGuildUser user in guildUsers)
+                {
+                    // Verfügbare Benutzer auf die Liste setzen
+                    users.Add(user);
+                }
+
+                // Liste in Array konvertieren und zufällige Zahl generieren
+                SocketGuildUser[] arrayUsers = users.ToArray();
+                int rndUser = rnd.Next(0, arrayUsers.Length + 1);
+                #endregion
+
+                error.Description = $"Das ist lieb von dir, aber ich brauche das nicht. Nimm lieber @{arrayUsers[rndUser]}";
+
+                await ReplyAsync("", false, error.Build());
+                return;
+            }
+            #endregion no receiver or bot
+
             string[] entries = { };
             string stringHugs = "0";
             string stringPats = "0";
@@ -175,7 +245,6 @@ namespace AkiDiscordBot.Modules
             };
 
             // Zufallszahl, um ein zufälliges Gif auszuwählen
-            Random rnd = new Random();
             int i = rnd.Next(0, gif.Length);
 
             var embed = new EmbedBuilder() { Color = color };
@@ -268,6 +337,75 @@ namespace AkiDiscordBot.Modules
         [Summary("Streichelt einen Spieler")]
         public async Task Pat(string receiver)
         {
+            Random rnd = new Random();
+
+            EmbedBuilder error = new EmbedBuilder();
+            error.Color = color;
+
+            #region no receiver or bot
+            if (receiver == null || !receiver.Contains("@"))
+            {
+                #region Users auslesen
+                // Liste erstellen
+                List<SocketGuildUser> users = new List<SocketGuildUser>();
+
+                // Alle verfügbaren Benutzer auf dem Server einlesen
+                var guildUsers = Context.Guild.Users;
+                foreach (SocketGuildUser user in guildUsers)
+                {
+                    // Verfügbare Benutzer auf die Liste setzen
+                    users.Add(user);
+                }
+
+                // Liste in Array konvertieren und zufällige Zahl generieren
+                SocketGuildUser[] arrayUsers = users.ToArray();
+                int rndUser = rnd.Next(0, arrayUsers.Length);
+                #endregion
+
+                string[] msg =
+                {
+                    "Schon mal Luft gestreichelt?",
+                    "Da hast du wohl etwas vergessen, meinst du nicht auch?",
+                    $"Einmal Mitleid für {Context.User.Username}! Du streichelst Luft.",
+                    "Uhm... Wie wär's mit jemandem, den du auch streicheln kannst?",
+                    "Ach komm, streichel doch wenigstens irgendwen.",
+                    "Ich hab besseres zu tun, als dir beim Luft Streicheln zuzusehen.",
+                    $"Ich geb dir einen Vorschlag: Streichel doch mal @{arrayUsers[rndUser]} am Kopf!",
+                    $"Achtung! Ein wildes {Context.User.Username} versucht den Boden zu streicheln!"
+                };
+
+                int x = rnd.Next(0, msg.Length);
+                error.Description = msg[x];
+
+                await ReplyAsync("", false, error.Build());
+                return;
+            }
+            else if (Context.Message.Content.Contains("<@632229735178567690>"))
+            {
+                #region Users auslesen
+                // Liste erstellen
+                List<SocketGuildUser> users = new List<SocketGuildUser>();
+
+                // Alle verfügbaren Benutzer auf dem Server einlesen
+                var guildUsers = Context.Guild.Users;
+                foreach (SocketGuildUser user in guildUsers)
+                {
+                    // Verfügbare Benutzer auf die Liste setzen
+                    users.Add(user);
+                }
+
+                // Liste in Array konvertieren und zufällige Zahl generieren
+                SocketGuildUser[] arrayUsers = users.ToArray();
+                int rndUser = rnd.Next(0, arrayUsers.Length + 1);
+                #endregion
+
+                error.Description = $"Das ist lieb von dir, aber ich brauche das nicht. Nimm lieber @{arrayUsers[rndUser]}";
+
+                await ReplyAsync("", false, error.Build());
+                return;
+            }
+            #endregion no receiver or bot
+
             string[] entries = { };
             string stringHugs = "0";
             string stringPats = "0";
@@ -292,7 +430,6 @@ namespace AkiDiscordBot.Modules
                 "https://thumbs.gfycat.com/NauticalDampJerboa.webp"
             };
 
-            Random rnd = new Random();
             int i = rnd.Next(0, gif.Length);
 
             var embed = new EmbedBuilder() { Color = color };
@@ -379,7 +516,7 @@ namespace AkiDiscordBot.Modules
 
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
-        
+              
         [Command("lick")]
         [Summary("Mhhhh, lecker")]
         public async Task Lick(string receiver)
@@ -424,6 +561,29 @@ namespace AkiDiscordBot.Modules
             embed.WithImageUrl(gif[i]);
 
             await Context.Channel.SendMessageAsync("", false, embed.Build());
+        }
+        
+        [Command("poke")]
+        [Summary("Stupse jemanden per Direktnachricht an")]
+        public async Task poke(IGuildUser receiver, [Remainder]string msg = null)
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+
+            if (msg != null)
+            { 
+                embed.Color = color;
+                embed.Title = $"Hey du! {Context.User.Username} braucht deine Aufmerksamkeit!";
+                embed.Description = msg;
+
+                await receiver.SendMessageAsync("", false, embed.Build());
+            }
+            else
+            {
+                embed.Color = color;
+                embed.Description = "Ohne Nachricht kann ich niemanden für dich anstupsen.";
+
+                await Context.Channel.SendMessageAsync("", false, embed.Build());
+            }
         }
 
 

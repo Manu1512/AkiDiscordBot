@@ -8,8 +8,8 @@ namespace AkiDiscordBot.Modules
 {
     public class Moderation
     {
-        static string[] Filter_de = File.ReadAllLines(@"Resources\Filter\Filter-de.txt");
-        static string[] Filter_en = File.ReadAllLines(@"Resources\Filter\Filter-en.txt");
+        static string[] Filter_de = File.ReadAllLines(@"Resources/Filter/Filter-de.txt");
+        static string[] Filter_en = File.ReadAllLines(@"Resources/Filter/Filter-en.txt");
 
         public static async Task WordsFilter(SocketMessage msg)
         {
