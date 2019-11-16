@@ -57,8 +57,12 @@ namespace AkiDiscordBot
         {
             _client.MessageReceived += HandleCommandAsync;
             _client.MessageReceived += Moderation.WordsFilter;
+
             _client.JoinedGuild += RegisterJoinAsync;
             _client.LeftGuild += RegisterLeftAsync;
+
+            _client.UserJoined += Welcome.WelcomeMsg;
+
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
