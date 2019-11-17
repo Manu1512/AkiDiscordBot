@@ -15,8 +15,6 @@ namespace AkiDiscordBot.Modules
 
         public static Color color = new Color(0xFF7700);
         string sPrefix = Config.bot.cmdPrefix;
-        //string gif01 = @"Resources/Gifs/gif01.gif";
-        //Uri gif01 = new Uri("file:///Resources/Gifs/gif01.gif");
 
         #region administration
         [Command("help")]
@@ -265,9 +263,8 @@ namespace AkiDiscordBot.Modules
                 "http://25.media.tumblr.com/tumblr_ma7l17EWnk1rq65rlo1_500.gif",
                 "https://38.media.tumblr.com/b004f301143edad269aa1d88d0f1e245/tumblr_mx084htXKO1qbvovho1_500.gif",
                 "https://31.media.tumblr.com/f1f87c6005c580ad61155ea9e26c6d88/tumblr_inline_nanykpgO701s6lw3t.gif",
-                "https://media1.tenor.com/images/49a21e182fcdfb3e96cc9d9421f8ee3f/tenor.gif?itemid=3532079",
                 "https://gifimage.net/wp-content/uploads/2017/09/anime-nuzzle-gif-4.gif",
-                "https://media2.giphy.com/media/mZQZ4aBMgM3Kg/200.webp?cid=790b7611138f677eb9ea9872067cd4d285d4144931c23578&rid=200.webp"
+                "https://i.giphy.com/media/mZQZ4aBMgM3Kg/200.webp"
             };
 
             // Zufallszahl, um ein zufälliges Gif auszuwählen
@@ -448,10 +445,8 @@ namespace AkiDiscordBot.Modules
             string[] gif =
             {
                 "https://33.media.tumblr.com/72d640d7c1bb765420783a9b9cbee13c/tumblr_nxjapoyGms1u86t2qo1_540.gif",
-                "https://media1.tenor.com/images/da8f0e8dd1a7f7db5298bda9cc648a9a/tenor.gif?itemid=12018819",
                 "https://pa1.narvii.com/6400/8685249d3f096bae8cdd976c1b33513c5dc415b2_hq.gif",
                 "https://archive-media-0.nyafuu.org/c/image/1483/55/1483553008493.gif",
-                "https://media1.tenor.com/images/5466adf348239fba04c838639525c28a/tenor.gif",
                 "https://thumbs.gfycat.com/SamePopularFinch.webp",
                 "https://thumbs.gfycat.com/NauticalDampJerboa.webp"
             };
@@ -545,7 +540,7 @@ namespace AkiDiscordBot.Modules
               
         [Command("lick")]
         [Summary("Mhhhh, lecker")]
-        public async Task Lick(string receiver)
+        public async Task Lick(IGuildUser receiver)
         {
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
@@ -569,7 +564,7 @@ namespace AkiDiscordBot.Modules
 
         [Command("kiss")]
         [Summary("Küsse deinen Liebling")]
-        public async Task Kiss(string receiver)
+        public async Task Kiss(IGuildUser receiver)
         {
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
@@ -589,9 +584,33 @@ namespace AkiDiscordBot.Modules
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
 
+        [Command("slap")]
+        [Summary("SLAP!")]
+        public async Task Slap(IGuildUser receiver)
+        {
+            string sender = "<@" + Context.User.Id + ">";
+            string[] gif =
+            {
+                "http://giphygifs.s3.amazonaws.com/media/jLeyZWgtwgr2U/giphy.gif",
+                "https://i.giphy.com/media/fO6UtDy5pWYwM/giphy.webp",
+                "https://i.giphy.com/media/Zau0yrl17uzdK/giphy.webp",
+                "https://i.giphy.com/media/tX29X2Dx3sAXS/giphy.webp",
+                "https://i.giphy.com/media/Gf3AUz3eBNbTW/giphy.webp"
+            };
+
+            Random rnd = new Random();
+            int i = rnd.Next(0, gif.Length);
+
+            var embed = new EmbedBuilder() { Color = color };
+            embed.WithDescription(sender + " schlägt " + receiver);
+            embed.WithImageUrl(gif[i]);
+
+            await Context.Channel.SendMessageAsync("", false, embed.Build());
+        }
+
         [Command("sad")]
         [Summary("Wenn du mal traurig bist")]
-        public async Task Sad(string receiver)
+        public async Task Sad()
         {
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
@@ -611,7 +630,7 @@ namespace AkiDiscordBot.Modules
 
         [Command("cry")]
         [Summary("Nicht weinen, wir sind da für dich!")]
-        public async Task Cry(string receiver)
+        public async Task Cry()
         {
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
