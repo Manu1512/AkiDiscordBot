@@ -130,7 +130,7 @@ namespace AkiDiscordBot.Modules
             var wavingHand = new Emoji("👋");
 
             var user = Context.User as SocketGuildUser;
-            var role = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Name == "User");
+            var role = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 536965392367878174);
 
             if(!user.Roles.Contains(role))
             {
@@ -138,6 +138,32 @@ namespace AkiDiscordBot.Modules
                 await Context.Message.AddReactionAsync(wavingHand);
             }
         }       
+
+        [Command("otaku")]
+        [Summary("Gib oder entferne dir die Rolle 'Otaku'")]
+        public async Task Otaku()
+        {
+            var user = Context.User as SocketGuildUser;
+            var role = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 536658965048852571);
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.Color = color;
+
+            if(!user.Roles.Contains(role))
+            {
+                embed.Description = "Ein neues Mitglied! Wie toll, dass du dabei bist.";
+
+                await user.AddRoleAsync(role);
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                embed.Description = "Du willst kein Otaku mehr sein? Schade.";
+
+                await user.RemoveRoleAsync(role);
+                await ReplyAsync("", false, embed.Build());
+            }
+        }
         #endregion useful
 
 
@@ -562,7 +588,50 @@ namespace AkiDiscordBot.Modules
 
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
-        
+
+        [Command("sad")]
+        [Summary("Wenn du mal traurig bist")]
+        public async Task Sad(string receiver)
+        {
+            string sender = "<@" + Context.User.Id + ">";
+            string[] gif =
+            {
+                "https://steamuserimages-a.akamaihd.net/ugc/951845529592135299/A6EC5F3B583226460A91A825FA9363A8A3C1BD9F/",
+                "https://gifimage.net/wp-content/uploads/2017/06/sad-anime-gif-16.gif"
+            };
+
+            Random rnd = new Random();
+            int i = rnd.Next(0, gif.Length);
+
+            var embed = new EmbedBuilder() { Color = color };
+            embed.WithImageUrl(gif[i]);
+
+            await Context.Channel.SendMessageAsync("", false, embed.Build());
+        }
+
+        [Command("cry")]
+        [Summary("Nicht weinen, wir sind da für dich!")]
+        public async Task Cry(string receiver)
+        {
+            string sender = "<@" + Context.User.Id + ">";
+            string[] gif =
+            {
+                "https://steamuserimages-a.akamaihd.net/ugc/951845529592135299/A6EC5F3B583226460A91A825FA9363A8A3C1BD9F/",
+                "https://66.media.tumblr.com/95e1d4d8a03c453af4c6fd65eab75669/tumblr_n9972opTx81s4yh14o1_500.gif",
+                "https://66.media.tumblr.com/ee75f2137200b095763a672af16c6fcf/tumblr_mpxuu75B0U1r907jzo1_500.gif",
+                "http://giphygifs.s3.amazonaws.com/media/ROF8OQvDmxytW/giphy.gif",
+                "http://giphygifs.s3.amazonaws.com/media/qscdhWs5o3yb6/giphy.gif"
+            };
+
+            Random rnd = new Random();
+            int i = rnd.Next(0, gif.Length);
+
+            var embed = new EmbedBuilder() { Color = color };
+            embed.WithImageUrl(gif[i]);
+
+            await Context.Channel.SendMessageAsync("", false, embed.Build());
+        }
+
         [Command("poke")]
         [Summary("Stupse jemanden per Direktnachricht an")]
         public async Task poke(IGuildUser receiver, [Remainder]string msg = null)
@@ -570,12 +639,18 @@ namespace AkiDiscordBot.Modules
             EmbedBuilder embed = new EmbedBuilder();
 
             if (msg != null)
-            { 
+            {
+                EmbedBuilder success = new EmbedBuilder();
+
                 embed.Color = color;
                 embed.Title = $"Hey du! {Context.User.Username} braucht deine Aufmerksamkeit!";
                 embed.Description = msg;
 
+                success.Color = color;
+                success.Description = $"Ich hab {receiver.Username} für dich angestupst.";
+
                 await receiver.SendMessageAsync("", false, embed.Build());
+                await ReplyAsync("", false, success.Build());
             }
             else
             {
@@ -587,9 +662,7 @@ namespace AkiDiscordBot.Modules
         }
 
 
-        // sad gif: https://steamuserimages-a.akamaihd.net/ugc/951845529592135299/A6EC5F3B583226460A91A825FA9363A8A3C1BD9F/
         // TODO: cuddle
-        // TODO: cry
         // TODO: slap
         // TODO: sorry (apologize)
         #endregion fun
