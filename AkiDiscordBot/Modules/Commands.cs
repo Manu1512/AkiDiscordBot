@@ -16,6 +16,8 @@ namespace AkiDiscordBot.Modules
         public static Color color = new Color(0xFF7700);
         string sPrefix = Config.bot.cmdPrefix;
 
+        public static ulong modlogId = 536962362788413462;
+
         #region administration
         [Command("help")]
         [Summary("Lässt alle Commands ausgeben")]
@@ -109,7 +111,12 @@ namespace AkiDiscordBot.Modules
         [RequireBotPermission(GuildPermission.KickMembers)]
         public async Task Kick(IGuildUser user, [Remainder]string reason = "Keine Begründung angegeben")
         {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.Color = color;
+            embed.AddField($"{user} wurde gekickt", reason);
+
             await user.KickAsync(reason);
+            await ((ISocketMessageChannel)Program._client.GetChannel(modlogId)).SendMessageAsync("", false, embed.Build());
         }
 
         [Command("ban")]
@@ -118,9 +125,14 @@ namespace AkiDiscordBot.Modules
         [RequireBotPermission(GuildPermission.BanMembers)]
         public async Task Ban(IGuildUser user, int msgRemoveDays = 1, [Remainder]string reason = "Keine Begründung angegeben")
         {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.Color = color;
+            embed.AddField($"{user} wurde gebannt und Nachrichten für {msgRemoveDays} Tag(e) gelöscht", reason);
+
             await user.BanAsync(msgRemoveDays, reason);
+            await ((ISocketMessageChannel)Program._client.GetChannel(modlogId)).SendMessageAsync("", false, embed.Build());
         }
-        
+
         [Command("accept")]
         [Summary("Akzeptiere das Regelwerk")]
         public async Task Accept()
@@ -615,7 +627,7 @@ namespace AkiDiscordBot.Modules
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
             {
-                "https://steamuserimages-a.akamaihd.net/ugc/951845529592135299/A6EC5F3B583226460A91A825FA9363A8A3C1BD9F/",
+                "https://steamuserimages-a.akamaihd.net/ugc/951845529592135299/A6EC5F3B583226460A91A825FA9363A8A3C1BD9F/", // Bewegt sich bei Discord nicht
                 "https://gifimage.net/wp-content/uploads/2017/06/sad-anime-gif-16.gif"
             };
 
@@ -635,7 +647,6 @@ namespace AkiDiscordBot.Modules
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
             {
-                "https://steamuserimages-a.akamaihd.net/ugc/951845529592135299/A6EC5F3B583226460A91A825FA9363A8A3C1BD9F/",
                 "https://66.media.tumblr.com/95e1d4d8a03c453af4c6fd65eab75669/tumblr_n9972opTx81s4yh14o1_500.gif",
                 "https://66.media.tumblr.com/ee75f2137200b095763a672af16c6fcf/tumblr_mpxuu75B0U1r907jzo1_500.gif",
                 "http://giphygifs.s3.amazonaws.com/media/ROF8OQvDmxytW/giphy.gif",
@@ -705,10 +716,73 @@ namespace AkiDiscordBot.Modules
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.Color = color;
-            embed.Description = $"Deine Zahl ist {result}";
+            embed.Description = $"Ich habe {result} für dich gewürfelt.";
 
             await ReplyAsync("", false, embed.Build());
         }
         #endregion useful
+
+
+
+        #region animals
+        [Command("cat")]
+        [Summary("Schickt ein süßes Katzenbild in den Chat")]
+        public async Task Cat()
+        {
+            string sender = "<@" + Context.User.Id + ">";
+            string[] gif =
+            {
+                "https://devblogs.nvidia.com/wp-content/uploads/2016/07/cute.jpg",
+                "https://i.imgur.com/gdWIxn2.jpg",
+                "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/cute-cat-captions-1563551865.jpg?crop=0.668xw:1.00xh;0.199xw,0&resize=480:*",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvSHvU4DJJSxKL5CKGPeFJoy6sgNYfpf-ntR4mfGrI1XvCXyUk&s",
+                "https://i.redd.it/7q3q31djaf921.jpg",
+                "https://cdn.vox-cdn.com/thumbor/-rwMBmhqgFFjfodG72q3g-A0xPM=/0x0:750x394/1200x800/filters:focal(315x137:435x257)/cdn.vox-cdn.com/" +
+                "uploads/chorus_image/image/60939037/GOGHex2SIW8EkuCqnT42_385891624.0.1534632092.jpg",
+                "https://ae01.alicdn.com/kf/HTB1EMsmB49YBuNjy0Ffq6xIsVXaO.jpg_q50.jpg",
+                "https://thefrisky.com/wp-content/uploads/2018/11/Cute-cat-6.jpg",
+                "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/kitten-looking-out-from-under-blanket-royalty-free-image-466265904-1542817024." +
+                "jpg?crop=1xw:1xh;center,top&resize=480:*",
+                "https://cdn.pixabay.com/photo/2015/11/07/11/34/kitten-1031261_960_720.jpg",
+                "https://i.imgur.com/dc1PU8j.jpg",
+                "https://cdn.pixabay.com/photo/2019/06/09/12/56/cat-4262034_960_720.jpg",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn1I1rwSq-JDvXuyYyVfR1Wo7wk9XHdAxt3XuIl1_Sgub2ObIt&s",
+                "https://www.baldivisvet.com.au/wp-content/uploads/2017/10/hd-cute-cat-wallpaper.jpg",
+                "https://www.readersdigest.ca/wp-content/uploads/sites/14/2019/05/cutest-cat-breeds-colored-british-shorthair-600x400.jpg",
+                "https://img.buzzfeed.com/buzzfeed-static/static/2016-08/8/16/asset/buzzfeed-prod-fastlane01/sub-buzz-23973-1470687963-1.png" +
+                "?downsize=700:*&output-format=auto&output-quality=auto",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz5IHpDAM40gkkRG2bYK8ZzCxRU2MBxD7EKoMYkNGssOIFXBrAQA&s",
+                "https://wallpaperbro.com/img/595891.jpg",
+                "https://www.incimages.com/uploaded_files/image/970x450/getty_513189787_110007.jpg",
+                "https://lh3.googleusercontent.com/ObdbSatQvNUymufVs3vL5YmhGdvs3w5vvTciaGLFQOZoREVAEIIueioFOrWk9je_fqxR",
+                "https://img.buzzfeed.com/buzzfeed-static/static/2016-07/21/11/asset/buzzfeed-prod-fastlane02/sub-buzz-7692-1469114529-5.jpg" +
+                "?downsize=700:*&output-format=auto&output-quality=auto",
+                "http://earthporm.com/wp-content/uploads/2015/04/XX-Cat-Plants4__605.jpg",
+                "https://data.whicdn.com/images/320931187/original.jpg?t=1539713283",
+                "https://s3.amazonaws.com/petsoverload/wp-content/uploads/2019/01/24150729/beau-sitting-on-cat-tree.jpg",
+                "https://www.rd.com/wp-content/uploads/2019/05/shutterstock_671541538-e1557714950453.jpg",
+                "https://www.cancats.net/wp-content/uploads/2014/10/cute-cat-pictures-the-cutest-cat-ever.jpg",
+                "https://www.clydefitchreport.com/wp-content/uploads/2016/12/cute-cat-images-tpevent-17.jpg",
+                "https://jasonlefkowitz.net/wp-content/uploads/2013/07/Cute-Cat-Photos-wallpaper.jpg",
+                "https://www.thehappycatsite.com/wp-content/uploads/2017/05/cute1.jpg",
+                "https://www.debilder.net/wp-content/uploads/2018/12/cute-cat-photos-free-download-bilder.jpg",
+                "https://www.rover.com/blog/wp-content/uploads/2019/04/cute-big-eyes-960x540-1.jpg",
+                "https://www.quartoknows.com/blog/wp-content/uploads/2017/08/Bengal.png",
+                "https://meowpassion.com/wp-content/uploads/2018/11/grey-cat.jpg",
+                "http://s3.weddbook.com/t4/2/5/4/2549923/cute-cats.jpg",
+                "https://www.medicalnewstoday.com/content/images/articles/322/322594/cute-kitten.jpg",
+                "https://cms.hostelbookers.com/hbblog/wp-content/uploads/sites/3/2012/02/refer-e1329931959958.jpg",
+                "https://www.mypetsname.com/wp-content/uploads/2019/10/Cute-Cat.jpg"
+            };
+
+            Random rnd = new Random();
+            int i = rnd.Next(0, gif.Length);
+
+            var embed = new EmbedBuilder() { Color = color };
+            embed.WithImageUrl(gif[i]);
+
+            await Context.Channel.SendMessageAsync("", false, embed.Build());
+        }
+        #endregion animals
     }
 }

@@ -19,10 +19,11 @@ namespace AkiDiscordBot.Modules
 
             if (Filter_de.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)) ||
                 Filter_en.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)))
-            { 
-                await msg.DeleteAsync();
-
+            {
                 Console.WriteLine($"[DELETED] {user}: {msg}");
+
+                await msg.DeleteAsync();
+                await ((ISocketMessageChannel)Program._client.GetChannel(Commands.modlogId)).SendMessageAsync(Convert.ToString($"[DELETED] {user}: {msg}"));
             }
         }
     }

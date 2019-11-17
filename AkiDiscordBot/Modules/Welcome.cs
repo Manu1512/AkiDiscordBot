@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace AkiDiscordBot
+namespace AkiDiscordBot.Modules
 {
     public class Welcome
     {
