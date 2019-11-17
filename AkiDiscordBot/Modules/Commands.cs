@@ -18,7 +18,7 @@ namespace AkiDiscordBot.Modules
         //string gif01 = @"Resources/Gifs/gif01.gif";
         //Uri gif01 = new Uri("file:///Resources/Gifs/gif01.gif");
 
-        #region useful
+        #region administration
         [Command("help")]
         [Summary("Lässt alle Commands ausgeben")]
         public async Task Help([Summary("Gibt aus, wie der Command verwendet wird")]string helpCommand = null)
@@ -164,7 +164,7 @@ namespace AkiDiscordBot.Modules
                 await ReplyAsync("", false, embed.Build());
             }
         }
-        #endregion useful
+        #endregion administration
 
 
 
@@ -661,10 +661,35 @@ namespace AkiDiscordBot.Modules
             }
         }
 
+        //[Command("ship")]
+        //[Summary("Ship! Ship! Ship! <user1> <user2>")]
+        //public async Task Ship(IGuildUser user1, IGuildUser user2)
+        //{
+        //    ulong user1Id = user1.Id;
+        //    ulong user2Id = user2.Id;
+        //}
 
         // TODO: cuddle
         // TODO: slap
         // TODO: sorry (apologize)
         #endregion fun
+
+
+
+        #region useful
+        [Command("rnd")]
+        [Summary("Gibt eine Zufallszahl in einem Bereich aus >min >max")]
+        public async Task Rnd(int min, int max)
+        {
+            Random rnd = new Random();
+            int result = rnd.Next(min, max + 1);
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.Color = color;
+            embed.Description = $"Deine Zahl ist {result}";
+
+            await ReplyAsync("", false, embed.Build());
+        }
+        #endregion useful
     }
 }
