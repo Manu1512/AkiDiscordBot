@@ -13,17 +13,21 @@ namespace AkiDiscordBot.Modules
 
         public static async Task WordsFilter(SocketMessage msg)
         {
-            string user = msg.Author.Username;
+            // Verhindert, dass Aki die Nachricht im mod-log liest und sich selbst löscht (loop)
+            if(!msg.Author.IsBot)
+            { 
+                string user = msg.Author.Username;
+            
+                var channel = msg.Channel as SocketGuildChannel;
 
-            var channel = msg.Channel as SocketGuildChannel;
+                if (Filter_de.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)) ||
+                    Filter_en.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)))
+                {
+                    Console.WriteLine($"[DELETED] {user}: {msg}");
 
-            if (Filter_de.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)) ||
-                Filter_en.Any(word => msg.Content.Contains(word, StringComparison.OrdinalIgnoreCase)))
-            {
-                Console.WriteLine($"[DELETED] {user}: {msg}");
-
-                await msg.DeleteAsync();
-                await ((ISocketMessageChannel)Program._client.GetChannel(Commands.modlogId)).SendMessageAsync(Convert.ToString($"[DELETED] {user}: {msg}"));
+                    await msg.DeleteAsync();
+                    await ((ISocketMessageChannel)Program._client.GetChannel(Commands.modlogId)).SendMessageAsync(Convert.ToString($"[DELETED] {user}: {msg}"));
+                }
             }
         }
     }

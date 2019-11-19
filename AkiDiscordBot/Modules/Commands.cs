@@ -219,7 +219,8 @@ namespace AkiDiscordBot.Modules
                     $"Ich geb dir einen Vorschlag: Umarm doch mal @{arrayUsers[rndUser]}!",
                     "Irgendwie tust du mir leid.",
                     "Versuch nochmal nachzudenken, was du gerade vergessen hast.",
-                    "Du verstehst nicht, wie das funktioniert, oder?"
+                    "Du verstehst nicht, wie das funktioniert, oder?",
+                    "Umarm dich doch wenigstens selbst"
                 };
 
                 int x = rnd.Next(0, msg.Length);
@@ -228,7 +229,7 @@ namespace AkiDiscordBot.Modules
                 await ReplyAsync("", false, error.Build());
                 return;
             }
-            else if (Context.Message.Content.Contains("<@632229735178567690>"))
+            else if (Context.Message.Content.Contains("<@632229735178567690>")) // Wenn der receiver Aki enthält
             {
                 #region Users auslesen
                 // Liste erstellen
@@ -248,6 +249,13 @@ namespace AkiDiscordBot.Modules
                 #endregion
 
                 error.Description = $"Das ist lieb von dir, aber ich brauche das nicht. Nimm lieber @{arrayUsers[rndUser]}";
+
+                await ReplyAsync("", false, error.Build());
+                return;
+            }
+            else if(receiver == Context.User.Username)
+            {
+                error.Description = "Na schau, wenigstens umarmst du dich selbst";
 
                 await ReplyAsync("", false, error.Build());
                 return;
@@ -370,7 +378,7 @@ namespace AkiDiscordBot.Modules
 
         [Command("pat")]
         [Summary("Streichelt einen Spieler")]
-        public async Task Pat(string receiver)
+        public async Task Pat(string receiver = null)
         {
             Random rnd = new Random();
 
@@ -459,7 +467,6 @@ namespace AkiDiscordBot.Modules
                 "https://33.media.tumblr.com/72d640d7c1bb765420783a9b9cbee13c/tumblr_nxjapoyGms1u86t2qo1_540.gif",
                 "https://pa1.narvii.com/6400/8685249d3f096bae8cdd976c1b33513c5dc415b2_hq.gif",
                 "https://archive-media-0.nyafuu.org/c/image/1483/55/1483553008493.gif",
-                "https://thumbs.gfycat.com/SamePopularFinch.webp",
                 "https://thumbs.gfycat.com/NauticalDampJerboa.webp"
             };
 
@@ -549,7 +556,7 @@ namespace AkiDiscordBot.Modules
 
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
-              
+        
         [Command("lick")]
         [Summary("Mhhhh, lecker")]
         public async Task Lick(IGuildUser receiver)
@@ -600,12 +607,26 @@ namespace AkiDiscordBot.Modules
         [Summary("SLAP!")]
         public async Task Slap(IGuildUser receiver)
         {
+            ulong akiId = 632229735178567690;
+
+            // Wenn receiver == Aki
+            if (receiver == Program._client.GetUser(akiId))
+            {
+                EmbedBuilder embed1 = new EmbedBuilder();
+                embed1.Color = color;
+
+                embed1.Description = "Das ist nicht sehr nett von dir.";
+
+                await ReplyAsync("", false, embed1.Build());
+                return;
+            }
+
             string sender = "<@" + Context.User.Id + ">";
             string[] gif =
             {
                 "http://giphygifs.s3.amazonaws.com/media/jLeyZWgtwgr2U/giphy.gif",
                 "https://i.giphy.com/media/fO6UtDy5pWYwM/giphy.webp",
-                "https://i.giphy.com/media/Zau0yrl17uzdK/giphy.webp",
+                "https://media1.giphy.com/media/Zau0yrl17uzdK/giphy.gif?cid=790b761128f4a288e52e7af943c1b833ddaea27283050fe3&rid=giphy.gif",
                 "https://i.giphy.com/media/tX29X2Dx3sAXS/giphy.webp",
                 "https://i.giphy.com/media/Gf3AUz3eBNbTW/giphy.webp"
             };
@@ -614,7 +635,7 @@ namespace AkiDiscordBot.Modules
             int i = rnd.Next(0, gif.Length);
 
             var embed = new EmbedBuilder() { Color = color };
-            embed.WithDescription(sender + " schlägt " + receiver);
+            embed.WithDescription($"{sender} schlägt <@{receiver}>");
             embed.WithImageUrl(gif[i]);
 
             await Context.Channel.SendMessageAsync("", false, embed.Build());
