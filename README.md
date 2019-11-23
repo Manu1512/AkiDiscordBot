@@ -4,8 +4,6 @@ This is my first Discord Bot called **Aki**. The main idea behind it is to learn
 
 It is **not possible** to invite it to your server. It is currently made to only function correctly on my own server.
 
-With Update **1.19.0.0**, the bot is now online on my discord server. **(German)**: https://discord.gg/H4Csk66
-
 ## Features
 
 Following features are available **at the moment**:
